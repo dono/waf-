@@ -50,7 +50,21 @@ def parse_raw_http(str):
 
 
 if __name__ == '__main__':
-    for text in parse_dataset('./static/normalTrafficTraining.txt'):
-        req = parse_raw_http(text)
-        j = json.dumps(req)
-        print(j)
+    with open('./norm-train.jsonl', 'w') as f:
+        for text in parse_dataset('./static/normalTrafficTraining.txt'):
+            req = parse_raw_http(text)
+            req['label'] = 'norm'
+            f.write('{}\n'.format(json.dumps(req)))
+            
+    with open('./norm-test.jsonl', 'w') as f:
+        for text in parse_dataset('./static/normalTrafficTest.txt'):
+            req = parse_raw_http(text)
+            req['label'] = 'norm'
+            f.write('{}\n'.format(json.dumps(req)))
+            
+    with open('./anom-test.jsonl', 'w') as f:
+        for text in parse_dataset('./static/anomalousTrafficTest.txt'):
+            req = parse_raw_http(text)
+            req['label'] = 'anom'
+            f.write('{}\n'.format(json.dumps(req)))
+            

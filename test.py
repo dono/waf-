@@ -1,5 +1,5 @@
-a = '10/11/12'
-
-t = ['1', '2', *a.split(r'/'), '3']
-
-print(t)
+with open('./test.txt', 'w') as f:
+    f.write('hoge\n')
+    f.write('hoge\n')
+    f.write('hoge\n')
+    f.write('hoge\n')

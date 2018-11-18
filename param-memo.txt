@@ -1,2 +1,4 @@
 {"params": {"window": 4, "min_count": 9, "vector_size": 800, "alpha": 0.01, "epochs": 80}, "score": {"Precision": 0.8291982057751612, "Recall": 0.8450714285714286, "F1": 0.837059572661667}}
 {"params": {"window": 2, "min_count": 13, "vector_size": 840, "alpha": 0.006, "epochs": 220}, "score": {"Precision": 0.8487204182718767, "Recall": 0.8812142857142857, "F1": 0.8646621811045697}}
+{"params": {"window": 2, "min_count": 13, "vector_size": 200, "alpha": 0.05, "min_alpha": 0.01, "epochs": 160}, "score": {"Accuracy": 0.8805, "Precision": 0.8870803662258393, "Recall": 0.872,
+ "F1": 0.8794755421079172}}
