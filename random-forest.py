@@ -5,22 +5,21 @@ import numpy as np
 from concurrent import futures
 from gensim.models.doc2vec import Doc2Vec
 from gensim.models.doc2vec import TaggedDocument
+from sklearn.ensemble import RandomForestClassifier
 
 
 # jsonl形式のトレーニング用データセットを読み込む
 def read_train_dataset(path):
     with open(path) as f:
-        for line in f:
+        for i, line in enumerate(f):
             d = json.loads(line)
-            # if len(d['words']) != 0: # ペイロードが空のデータは除外する
-            yield TaggedDocument(d['words'], [d['label']])
+            yield TaggedDocument(d['words'], [d['label']+str(i)])
 
 # jsonl形式のテスト用データセットを読み込む
 def read_test_dataset(path):
     with open(path) as f:
         for line in f:
             d = json.loads(line)
-            # if len(d['words']) != 0: # ペイロードが空のデータは除外する
             yield d
 
 def norm_test(model, norm_test_data):
@@ -63,7 +62,6 @@ def get_score(window, min_count, vector_size, alpha, min_alpha, epochs):
     warnings.filterwarnings('ignore', category=FutureWarning)
 
     train = list(read_train_dataset('./static/train.jsonl'))
-    # model = Doc2Vec(train, dm=1, window=6, min_count=15, vector_size=1000, alpha=0.003, min_alpha=0.001, workers=6, epochs=100)
     model = Doc2Vec(train, dm=1, window=window, min_count=min_count, vector_size=vector_size, alpha=alpha, min_alpha=min_alpha, epochs=epochs, workers=6)
 
     norms = list(read_test_dataset('./static/norm-test.jsonl'))
@@ -77,10 +75,10 @@ def get_score(window, min_count, vector_size, alpha, min_alpha, epochs):
 
         print('TP: {}, FN: {}, FP: {}, TN: {}'.format(TP, FN, FP, TN))
 
-        Accuracy = 0
-        Precision = 0
-        Recall = 0
-        F1 = 0
+        Accuracy = -1
+        Precision = -1
+        Recall = -1
+        F1 = -1
 
         if (TP + FP) != 0 and (TP + FN) != 0 and (TP + FP + FN + TN) != 0:
             Accuracy = (TP + TN) / (TP + FP + FN + TN)
@@ -94,5 +92,26 @@ def get_score(window, min_count, vector_size, alpha, min_alpha, epochs):
 
 
 if __name__ == '__main__':
-    result = get_score(2, 13, 200, 0.08, 0.01, 160)
-    print(json.dumps(result))
+    warnings.filterwarnings('ignore', category=FutureWarning)
+
+    norm_train = list(read_train_dataset('./static/norm-train.jsonl'))
+    anom_train = list(read_train_dataset('./static/anom-train.jsonl'))
+
+    # model = Doc2Vec([*norm_train, *anom_train], dm=1, window=2, min_count=13, vector_size=200, alpha=0.08, min_alpha=0.01, epochs=160, workers=6)
+    # model.save('./tmp/a.model')
+    model = Doc2Vec.load('./tmp/a.model')
+
+    norm_train_vecs = np.array([model.docvecs['norm'+str(i)] for i in range(len(norm_train))])
+    anom_train_vecs = np.array([model.docvecs['anom'+str(i)] for i in range(len(anom_train))])
+
+    # clf = RandomForestClassifier(random_state=0)
+
+
+    # testing
+    # norms = list(read_test_dataset('./static/norm-test.jsonl'))
+    # for norm in norms:
+    #     vec = model.infer_vector(norm['words'])
+
+    # anoms = list(read_test_dataset('./static/anom-test.jsonl'))
+    # for anom in anoms:
+    #     vec = model.infer_vector(anom['words'])

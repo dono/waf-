@@ -1,5 +1,5 @@
-with open('./test.txt', 'w') as f:
-    f.write('hoge\n')
-    f.write('hoge\n')
-    f.write('hoge\n')
-    f.write('hoge\n')
+hoge = [1, 2, 3]
+fuga = [4, 5, 6]
+
+aaa = [*hoge, *fuga]
+print(aaa)

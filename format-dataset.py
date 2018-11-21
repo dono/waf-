@@ -50,21 +50,39 @@ def parse_raw_http(str):
 
 
 if __name__ == '__main__':
-    with open('./norm-train.jsonl', 'w') as f:
-        for text in parse_dataset('./static/normalTrafficTraining.txt'):
+    # with open('./norm-train.jsonl', 'w') as f:
+    #     for text in parse_dataset('./static/normalTrafficTraining.txt'):
+    #         req = parse_raw_http(text)
+    #         req['label'] = 'norm'
+    #         f.write('{}\n'.format(json.dumps(req)))
+            
+    # with open('./norm-test.jsonl', 'w') as f:
+    #     for text in parse_dataset('./static/normalTrafficTest.txt'):
+    #         req = parse_raw_http(text)
+    #         req['label'] = 'norm'
+    #         f.write('{}\n'.format(json.dumps(req)))
+            
+    # with open('./anom-test.jsonl', 'w') as f:
+    #     for text in parse_dataset('./static/anomalousTrafficTest.txt'):
+    #         req = parse_raw_http(text)
+    #         req['label'] = 'anom'
+    #         f.write('{}\n'.format(json.dumps(req)))
+            
+    with open('./static2/norm-train.jsonl', 'w') as f:
+        for i, text in enumerate(parse_dataset('./static/normalTrafficTraining.txt')):
             req = parse_raw_http(text)
-            req['label'] = 'norm'
+            req['label'] = 'norm{}'.format(i)
             f.write('{}\n'.format(json.dumps(req)))
             
-    with open('./norm-test.jsonl', 'w') as f:
-        for text in parse_dataset('./static/normalTrafficTest.txt'):
+    with open('./static2/norm-test.jsonl', 'w') as f:
+        for i, text in enumerate(parse_dataset('./static/normalTrafficTest.txt')):
             req = parse_raw_http(text)
-            req['label'] = 'norm'
+            req['label'] = 'norm{}'.format(i)
             f.write('{}\n'.format(json.dumps(req)))
             
-    with open('./anom-test.jsonl', 'w') as f:
-        for text in parse_dataset('./static/anomalousTrafficTest.txt'):
+    with open('./static2/anom-test.jsonl', 'w') as f:
+        for i, text in enumerate(parse_dataset('./static/anomalousTrafficTest.txt')):
             req = parse_raw_http(text)
-            req['label'] = 'anom'
+            req['label'] = 'anom{}'.format(i)
             f.write('{}\n'.format(json.dumps(req)))
             
