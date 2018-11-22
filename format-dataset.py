@@ -1,10 +1,11 @@
 import re
+import gzip
 import json
 import urllib.parse
 
 
 # match '=', '&', '<', '>', '(', ')', '.', ' '
-reg = re.compile(r'[=&<>(). ]')
+reg = re.compile(r'(=|&|<|>|(|)|\.| |--|\r\n|\n\r|\n|\r|)')
 def split_payload(str):
     return reg.split(str)
 
@@ -16,7 +17,7 @@ def decode_payload(str):
 
 def parse_dataset(filepath):
     text = ''
-    with open(filepath) as f:
+    with gzip.open(filepath, mode='rt')
         for line in f:
             if ('GET' in line) or ('POST' in line) or ('PUT' in line):
                 if text != '':
@@ -50,39 +51,20 @@ def parse_raw_http(str):
 
 
 if __name__ == '__main__':
-    # with open('./norm-train.jsonl', 'w') as f:
-    #     for text in parse_dataset('./static/normalTrafficTraining.txt'):
-    #         req = parse_raw_http(text)
-    #         req['label'] = 'norm'
-    #         f.write('{}\n'.format(json.dumps(req)))
-            
-    # with open('./norm-test.jsonl', 'w') as f:
-    #     for text in parse_dataset('./static/normalTrafficTest.txt'):
-    #         req = parse_raw_http(text)
-    #         req['label'] = 'norm'
-    #         f.write('{}\n'.format(json.dumps(req)))
-            
-    # with open('./anom-test.jsonl', 'w') as f:
-    #     for text in parse_dataset('./static/anomalousTrafficTest.txt'):
-    #         req = parse_raw_http(text)
-    #         req['label'] = 'anom'
-    #         f.write('{}\n'.format(json.dumps(req)))
-            
-    with open('./static2/norm-train.jsonl', 'w') as f:
-        for i, text in enumerate(parse_dataset('./static/normalTrafficTraining.txt')):
+    with open('./norm-train.jsonl', 'w') as f:
+        for text in parse_dataset('./static/normalTrafficTraining.txt.gz'):
             req = parse_raw_http(text)
-            req['label'] = 'norm{}'.format(i)
+            req['label'] = 'norm'
             f.write('{}\n'.format(json.dumps(req)))
             
-    with open('./static2/norm-test.jsonl', 'w') as f:
-        for i, text in enumerate(parse_dataset('./static/normalTrafficTest.txt')):
+    with open('./norm-test.jsonl', 'w') as f:
+        for text in parse_dataset('./static/normalTrafficTest.txt.gz'):
             req = parse_raw_http(text)
-            req['label'] = 'norm{}'.format(i)
+            req['label'] = 'norm'
             f.write('{}\n'.format(json.dumps(req)))
             
-    with open('./static2/anom-test.jsonl', 'w') as f:
-        for i, text in enumerate(parse_dataset('./static/anomalousTrafficTest.txt')):
+    with open('./anom-test.jsonl', 'w') as f:
+        for text in parse_dataset('./static/anomalousTrafficTest.txt.gz'):
             req = parse_raw_http(text)
-            req['label'] = 'anom{}'.format(i)
+            req['label'] = 'anom'
             f.write('{}\n'.format(json.dumps(req)))
-            

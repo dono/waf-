@@ -5,7 +5,7 @@ import numpy as np
 from concurrent import futures
 from gensim.models.doc2vec import Doc2Vec
 from gensim.models.doc2vec import TaggedDocument
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.svm import SVC
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import precision_score
 from sklearn.metrics import recall_score
@@ -101,9 +101,9 @@ if __name__ == '__main__':
     norm_train = list(read_train_dataset('./static/norm-train.jsonl'))
     anom_train = list(read_train_dataset('./static/anom-train.jsonl'))
 
-    # model = Doc2Vec([*norm_train, *anom_train], dm=1, window=2, min_count=13, vector_size=200, alpha=0.08, min_alpha=0.01, epochs=160, workers=6)
-    # model.save('./tmp/a.model')
-    model = Doc2Vec.load('./tmp/a.model')
+    model = Doc2Vec(norm_train + anom_train, dm=1, window=2, min_count=13, vector_size=200, alpha=0.08, min_alpha=0.01, epochs=160, workers=6)
+    model.save('./tmp/a.model')
+    # model = Doc2Vec.load('./tmp/a.model')
 
     norm_train_vecs = [model.docvecs['norm'+str(i)] for i in range(len(norm_train))]
     anom_train_vecs = [model.docvecs['anom'+str(i)] for i in range(len(anom_train))]
@@ -111,7 +111,8 @@ if __name__ == '__main__':
     x_train = norm_train_vecs + anom_train_vecs
     y_train = ['norm']*len(norm_train_vecs) + ['anom']*len(anom_train_vecs)
 
-    clf = RandomForestClassifier(random_state=0, n_estimators=50, max_depth=23, max_features=100, n_jobs=6)
+    # clf = SVC(random_state=0)
+    clf = SVC(random_state=0, kernel='rbf', C=0.1, gamma=0.15)
     clf.fit(x_train, y_train)
 
     # testing

@@ -1,5 +1,4 @@
-hoge = [1, 2, 3]
-fuga = [4, 5, 6]
+itr = range(10)
 
-aaa = [*hoge, *fuga]
-print(aaa)
+itr.shuffle()
+print(itr)
