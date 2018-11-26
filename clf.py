@@ -60,11 +60,13 @@ def gen_params():
 def get_score(window, min_count, vector_size, alpha, min_alpha, epochs):
     warnings.filterwarnings('ignore', category=FutureWarning)
 
-    train = list(read_train_dataset('./static/processed/v2/norm-train.jsonl')) + list(read_train_dataset('./static/processed/v2/anom-train.jsonl'))
+    dataset_dir = './static/processed/v3/'
+
+    train = list(read_train_dataset(dataset_dir+'norm-train.jsonl')) + list(read_train_dataset(dataset_dir+'anom-train.jsonl'))
     model = Doc2Vec(train, dm=1, window=window, min_count=min_count, vector_size=vector_size, alpha=alpha, min_alpha=min_alpha, epochs=epochs, workers=6)
 
-    norms = list(read_test_dataset('./static/processed/v2/norm-test.jsonl'))
-    anoms = list(read_test_dataset('./static/processed/v2/anom-test.jsonl'))
+    norms = list(read_test_dataset(dataset_dir+'norm-test.jsonl'))
+    anoms = list(read_test_dataset(dataset_dir+'anom-test.jsonl'))
 
     with futures.ProcessPoolExecutor(max_workers=2) as executor:
         f1 = executor.submit(norm_test, model, norms)
@@ -93,5 +95,8 @@ def get_score(window, min_count, vector_size, alpha, min_alpha, epochs):
 if __name__ == '__main__':
     # result = get_score(2, 13, 200, 0.08, 0.01, 160)
     # result = get_score(2, 1, 200, 0.08, 0.01, 160)
-    result = get_score(2, 1, 300, 0.08, 0.01, 160)
-    print(json.dumps(result))
+    # result = get_score(2, 1, 300, 0.08, 0.01, 160)
+    result = get_score(2, 1, 300, 0.08, 0.01, 400)
+    for epoch in [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000]:
+        result = get_score(2, 1, 300, 0.08, 0.01, epoch)
+        print(json.dumps(result))

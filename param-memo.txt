@@ -5,3 +5,7 @@
 
 {"params": {"window": 2, "min_count": 1, "vector_size": 250, "alpha": 0.08, "min_alpha": 0.01, "epochs": 160}, "score": {"Accuracy": 0.8875, "Precision": 0.896622313203
 6848, "Recall": 0.876, "F1": 0.8861911987860395}} 
+
+{"params": {"window": 2, "min_count": 1, "vector_size": 300, "alpha": 0.08, "min_alpha": 0.01, "epochs": 600}, "score": {"Accuracy": 0.9175, "Precision": 0.9089128305582762, "Recall": 0.928,"F1": 0.9183572488866898}}
+
+{"params": {"window": 2, "min_count": 1, "vector_size": 300, "alpha": 0.08, "min_alpha": 0.01, "epochs": 700}, "score": {"Accuracy": 0.9205, "Precision": 0.8955785512699906, "Recall": 0.952, "F1": 0.922927775084828}}
