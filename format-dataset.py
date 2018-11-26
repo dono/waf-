@@ -1,11 +1,11 @@
 import re
+import random
 import gzip
 import json
 import urllib.parse
 
 
-# match '=', '&', '<', '>', '(', ')', '.', ' '
-reg = re.compile(r'(=|&|<|>|(|)|\.| |--|\r\n|\n\r|\n|\r|)')
+reg = re.compile(r'(=|&|<|>|\(|\)|\.| |--|\r\n|\n\r|\n|\r)')
 def split_payload(str):
     return reg.split(str)
 
@@ -17,7 +17,7 @@ def decode_payload(str):
 
 def parse_dataset(filepath):
     text = ''
-    with gzip.open(filepath, mode='rt')
+    with gzip.open(filepath, mode='rt') as f:
         for line in f:
             if ('GET' in line) or ('POST' in line) or ('PUT' in line):
                 if text != '':
@@ -44,27 +44,45 @@ def parse_raw_http(str):
                 break
 
     # To be confirmed
-    words = [method, u.netloc, *u.path.split(r'/')[1:], *split_payload(decode_payload(payload))]
+    words = [method, '|', u.netloc, '|', *u.path.split(r'/')[1:], '|', *split_payload(decode_payload(payload))]
 
     return {'payload': payload, 'words': words}
 
-
+def get_reqs(filepath, label):
+    reqs = []
+    for text in parse_dataset(filepath):
+        req = parse_raw_http(text)
+        req['label'] = label
+        reqs.append(req)
+    return reqs
 
 if __name__ == '__main__':
-    with open('./norm-train.jsonl', 'w') as f:
-        for text in parse_dataset('./static/normalTrafficTraining.txt.gz'):
-            req = parse_raw_http(text)
-            req['label'] = 'norm'
+    norm_train = get_reqs('./static/original/normalTrafficTraining.txt.gz', 'norm')
+    norm_test = get_reqs('./static/original/normalTrafficTest.txt.gz', 'norm')
+    anom_test = get_reqs('./static/original/anomalousTrafficTest.txt.gz', 'anom')
+
+    random.shuffle(norm_train)
+    random.shuffle(norm_test)
+    random.shuffle(anom_test)
+
+    new_norm_train = norm_train[:5000]
+    new_anom_train = anom_test[:5000]
+    new_norm_test = norm_test[:1000]
+    new_anom_test = anom_test[5000:6000]
+
+    with open('./static/processed/v2/norm-train.jsonl', 'w') as f:
+        for req in new_norm_train:
+            f.write('{}\n'.format(json.dumps(req)))
+
+    with open('./static/processed/v2/anom-train.jsonl', 'w') as f:
+        for req in new_anom_train:
             f.write('{}\n'.format(json.dumps(req)))
             
-    with open('./norm-test.jsonl', 'w') as f:
-        for text in parse_dataset('./static/normalTrafficTest.txt.gz'):
-            req = parse_raw_http(text)
-            req['label'] = 'norm'
+    with open('./static/processed/v2/norm-test.jsonl', 'w') as f:
+        for req in new_norm_test:
             f.write('{}\n'.format(json.dumps(req)))
             
-    with open('./anom-test.jsonl', 'w') as f:
-        for text in parse_dataset('./static/anomalousTrafficTest.txt.gz'):
-            req = parse_raw_http(text)
-            req['label'] = 'anom'
+    with open('./static/processed/v2/anom-test.jsonl', 'w') as f:
+        for req in new_anom_test:
             f.write('{}\n'.format(json.dumps(req)))
+            

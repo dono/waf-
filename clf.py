@@ -26,7 +26,6 @@ def read_test_dataset(path):
 def norm_test(model, norm_test_data):
     TP = FN = 0
     for data in norm_test_data:
-        # model.random.seed(0)
         vec = model.infer_vector(data['words'])
         label = model.docvecs.most_similar([vec], topn=1)[0][0]
         if label == 'norm':
@@ -38,7 +37,6 @@ def norm_test(model, norm_test_data):
 def anom_test(model, anom_test_data):
     FP = TN = 0
     for data in anom_test_data:
-        # model.random.seed(0)
         vec = model.infer_vector(data['words'])
         label = model.docvecs.most_similar([vec], topn=1)[0][0]
         if label == 'norm':
@@ -62,12 +60,11 @@ def gen_params():
 def get_score(window, min_count, vector_size, alpha, min_alpha, epochs):
     warnings.filterwarnings('ignore', category=FutureWarning)
 
-    train = list(read_train_dataset('./static/train.jsonl'))
-    # model = Doc2Vec(train, dm=1, window=6, min_count=15, vector_size=1000, alpha=0.003, min_alpha=0.001, workers=6, epochs=100)
+    train = list(read_train_dataset('./static/processed/v2/norm-train.jsonl')) + list(read_train_dataset('./static/processed/v2/anom-train.jsonl'))
     model = Doc2Vec(train, dm=1, window=window, min_count=min_count, vector_size=vector_size, alpha=alpha, min_alpha=min_alpha, epochs=epochs, workers=6)
 
-    norms = list(read_test_dataset('./static/norm-test.jsonl'))
-    anoms = list(read_test_dataset('./static/anom-test.jsonl'))
+    norms = list(read_test_dataset('./static/processed/v2/norm-test.jsonl'))
+    anoms = list(read_test_dataset('./static/processed/v2/anom-test.jsonl'))
 
     with futures.ProcessPoolExecutor(max_workers=2) as executor:
         f1 = executor.submit(norm_test, model, norms)
@@ -94,5 +91,7 @@ def get_score(window, min_count, vector_size, alpha, min_alpha, epochs):
 
 
 if __name__ == '__main__':
-    result = get_score(2, 13, 200, 0.08, 0.01, 160)
+    # result = get_score(2, 13, 200, 0.08, 0.01, 160)
+    # result = get_score(2, 1, 200, 0.08, 0.01, 160)
+    result = get_score(2, 1, 300, 0.08, 0.01, 160)
     print(json.dumps(result))
