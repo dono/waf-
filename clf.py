@@ -48,19 +48,18 @@ def anom_test(model, anom_test_data):
 
 def gen_params():
     params = []
-    for window in range(1, 6): # 5
-        for min_count in range(10, 31): # 20
-            for vector_size in range(10, 1001, 10): # 100
-                for alpha in [x / 1000 for x in range(1, 11)]: # 100
-                    for epochs in range(10, 301, 10): # 30
-                        params.append((window, min_count, vector_size, alpha, epochs))
+    window = list(range(1, 20))
+    min_count = list(range(0, 20))
+    for vector_size in range(10, 1001, 10): # 100
+        for alpha in [x / 1000 for x in range(1, 11)]: # 100
+            for epochs in range(10, 301, 10): # 30
+                params.append((window, min_count, vector_size, alpha, epochs))
     return params
 
 
-def get_score(window, min_count, vector_size, alpha, min_alpha, epochs):
+def get_score(window, min_count, vector_size, alpha, min_alpha, epochs, dataset_dir):
     warnings.filterwarnings('ignore', category=FutureWarning)
 
-    dataset_dir = './static/processed/v3/'
 
     train = list(read_train_dataset(dataset_dir+'norm-train.jsonl')) + list(read_train_dataset(dataset_dir+'anom-train.jsonl'))
     model = Doc2Vec(train, dm=1, window=window, min_count=min_count, vector_size=vector_size, alpha=alpha, min_alpha=min_alpha, epochs=epochs, workers=6)
@@ -93,10 +92,8 @@ def get_score(window, min_count, vector_size, alpha, min_alpha, epochs):
 
 
 if __name__ == '__main__':
-    # result = get_score(2, 13, 200, 0.08, 0.01, 160)
-    # result = get_score(2, 1, 200, 0.08, 0.01, 160)
-    # result = get_score(2, 1, 300, 0.08, 0.01, 160)
-    result = get_score(2, 1, 300, 0.08, 0.01, 400)
-    for epoch in [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000]:
-        result = get_score(2, 1, 300, 0.08, 0.01, epoch)
-        print(json.dumps(result))
+    # result = get_score(2, 1, 300, 0.08, 0.01, 400)
+    # for epoch in [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000]:
+    dataset_dir = './static/processed/v5/'
+    result = get_score(2, 1, 200, 0.08, 0.01, 1000, dataset_dir)
+    print(json.dumps(result))

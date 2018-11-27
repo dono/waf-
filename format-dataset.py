@@ -7,6 +7,7 @@ import urllib.parse
 
 reg = re.compile(r'(=|&|<|>|\(|\)|\.| |--|\r\n|\n\r|\n|\r)')
 def split_payload(str):
+    str = str.lower() # 大文字小文字を区別しない
     return reg.split(str)
 
 def decode_payload(str):
@@ -79,7 +80,7 @@ if __name__ == '__main__':
     new_norm_test = norm_test[:1000]
     new_anom_test = anom_test[5000:6000]
 
-    save_dir = './static/processed/v4/'
+    save_dir = './static/processed/v5/'
 
     with open(save_dir+'norm-train.jsonl', 'w') as f:
         for req in new_norm_train:
