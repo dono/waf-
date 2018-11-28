@@ -98,12 +98,12 @@ def get_score(window, min_count, vector_size, alpha, min_alpha, epochs):
 if __name__ == '__main__':
     warnings.filterwarnings('ignore', category=FutureWarning)
 
-    norm_train = list(read_train_dataset('./static/norm-train.jsonl'))
-    anom_train = list(read_train_dataset('./static/anom-train.jsonl'))
+    dataset_dir = './static/processed/v3/'
 
-    # model = Doc2Vec([*norm_train, *anom_train], dm=1, window=2, min_count=13, vector_size=200, alpha=0.08, min_alpha=0.01, epochs=160, workers=6)
-    # model.save('./tmp/a.model')
-    model = Doc2Vec.load('./tmp/a.model')
+    norm_train = list(read_train_dataset(dataset_dir + 'norm-train.jsonl'))
+    anom_train = list(read_train_dataset(dataset_dir + 'anom-train.jsonl'))
+
+    model = Doc2Vec(norm_train + anom_train, dm=1, window=2, min_count=1, vector_size=300, alpha=0.08, min_alpha=0.01, epochs=600, workers=6)
 
     norm_train_vecs = [model.docvecs['norm'+str(i)] for i in range(len(norm_train))]
     anom_train_vecs = [model.docvecs['anom'+str(i)] for i in range(len(anom_train))]
@@ -116,12 +116,12 @@ if __name__ == '__main__':
 
     # testing
     norm_test_vecs = []
-    norms = list(read_test_dataset('./static/norm-test.jsonl'))
+    norms = list(read_test_dataset(dataset_dir + 'norm-test.jsonl'))
     for norm in norms:
         norm_test_vecs.append(model.infer_vector(norm['words']))
 
     anom_test_vecs = []
-    anoms = list(read_test_dataset('./static/anom-test.jsonl'))
+    anoms = list(read_test_dataset(dataset_dir + 'anom-test.jsonl'))
     for anom in anoms:
         anom_test_vecs.append(model.infer_vector(anom['words']))
 
